@@ -60,7 +60,7 @@ use constant {
 	UTF8_DECODE		=> 0,		# convert text to local charset
 	LOCAL_CHARSET	=> 'windows-1251', # windows cyrillic
 	DEBUG_LEVEL		=> 3,		# 0 - quiet, 1 - essential, 2 - verbose
-	LOCAL_DIR		=> '',		# local directory to put files into. Leave it empty to put in the current directory. Slash (/, if not empty) in the end required.
+	LOCAL_DIR		=> 'out/',		# local directory to put files into. Leave it empty to put in the current directory. Slash (/, if not empty) in the end required.
 	HTTP_PROXY		=> '',		# set proxy URL if you use http proxy
 	CLIENT			=> 'Perl-ljsm/2.14; variomap@gmail.com',
 	CVSVERSION		=> '$Revision: 2.14 $', # don't touch this
@@ -521,7 +521,7 @@ sub get_files {
 			$post->{'link'} .= '?mode=reply' if ($opt_c);
 		}
 
-  # User can get a link for the hidden post, for example trying to fetch some other's 
+  # User can get a link for the hidden post, for example trying to fetch some other's
   # memories. In this case ljsm should continue fetching other posts, not panic on error
 	my ($should_continue_on_error, $content) = get_page($post->{'link'}, 0);
 	if ($content) {
@@ -623,6 +623,9 @@ sub cleanup_html {
 		s#<nobr>\s*</nobr>##g;
 		s#<p><b>Mass action.*$##g;
 		s#<link href=.*?>##g;
+
+        # remove javascript
+		s#<script.+?</script>##g;
 		$result .= "$_\n";
 	}
 
@@ -741,7 +744,7 @@ sub get_page {
     $url .= '&style=mine';
 	}
 
-  # FIXME: replace same-protocol URLs with http: for now. 
+  # FIXME: replace same-protocol URLs with http: for now.
   if ($url =~ m#^//#) {
     $url = 'http:' . $url;
   }
